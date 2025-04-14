@@ -7,11 +7,8 @@ servers:
 
 tags:
   - name: Users
-    description: User management operations
   - name: Restaurants
-    description: Restaurant listing and menu management
   - name: Cart
-    description: Shopping cart operations
 
 components:
   schemas:
