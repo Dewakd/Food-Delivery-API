@@ -81,6 +81,27 @@ app.get('/api/v1/users/:userId', (req, res) => {
     });
 });
 
+app.put('/api/v1/users/:userId', (req, res) => {
+    const userId = req.params.userId;
+    const { fullName, phoneNumber, address, email } = req.body;
+
+    const query = `UPDATE users 
+                   SET full_name = ?, phone_number = ?, address = ?, email = ? 
+                   WHERE id = ?`;
+
+    db.query(query, [fullName, phoneNumber, address, email, userId], (err, result) => {
+        if (err) {
+            res.status(500).send('Error updating user');
+            return;
+        }
+        if (result.affectedRows === 0) {
+            res.status(404).send('User not found');
+            return;
+        }
+        res.send('User updated successfully');
+    });
+});
+
 app.get('/api/v1/restaurants', (req, res) => {
     db.query('SELECT * FROM restaurants', (err, results) => {
         if (err) {
