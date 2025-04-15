@@ -45,4 +45,14 @@ app.get('/api/v1/users', (req, res) => {
     });
 });
 
+app.get('/api/v1/restaurants', (req, res) => {
+    db.query('SELECT * FROM restaurants', (err, results) => {
+        if (err) {
+            res.status(500).send('Error getting restaurants');
+            return;
+        }
+        res.json(results);
+    });
+});
+
 
