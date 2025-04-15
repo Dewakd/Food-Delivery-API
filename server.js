@@ -45,6 +45,26 @@ app.get('/api/v1/users', (req, res) => {
     });
 });
 
+app.post('/api/v1/users', (req, res) => {
+    const { username, email, password, fullName, phoneNumber, address } = req.body;
+
+    if (!username || !email || !password) {
+        res.status(400).send('Username, email and password are required');
+        return;
+    }
+
+    const query = `INSERT INTO users (username, email, password, full_name, phone_number, address) 
+                   VALUES (?, ?, ?, ?, ?, ?)`;
+
+    db.query(query, [username, email, password, fullName, phoneNumber, address], (err, result) => {
+        if (err) {
+            res.status(500).send('Error creating user');
+            return;
+        }
+        res.status(201).send('User created successfully');
+    });
+});
+
 app.get('/api/v1/restaurants', (req, res) => {
     db.query('SELECT * FROM restaurants', (err, results) => {
         if (err) {
