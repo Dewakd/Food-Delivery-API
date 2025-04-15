@@ -125,4 +125,20 @@ app.post('/api/v1/restaurants/:restaurantId/menu', (req, res) => {
     });
 });
 
+app.get('/api/v1/restaurants/:restaurantId', (req, res) => {
+    const restaurantId = req.params.restaurantId;
+
+    db.query('SELECT * FROM restaurants WHERE id = ?', [restaurantId], (err, results) => {
+        if (err) {
+            res.status(500).send('Error getting restaurant');
+            return;
+        }
+        if (results.length === 0) {
+            res.status(404).send('Restaurant not found');
+            return;
+        }
+        res.json(results[0]);
+    });
+});
+
 
