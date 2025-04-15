@@ -141,4 +141,30 @@ app.get('/api/v1/restaurants/:restaurantId', (req, res) => {
     });
 });
 
+app.put('/api/v1/restaurants/:restaurantId', (req, res) => {
+    const restaurantId = req.params.restaurantId;
+    const { name, description, image, rating } = req.body;
+
+    if (!name) {
+        res.status(400).send('Restaurant name is required');
+        return;
+    }
+
+    const query = `UPDATE restaurants 
+                   SET name = ?, description = ?, image = ?, rating = ? 
+                   WHERE id = ?`;
+
+    db.query(query, [name, description, image, rating, restaurantId], (err, result) => {
+        if (err) {
+            res.status(500).send('Error updating restaurant');
+            return;
+        }
+        if (result.affectedRows === 0) {
+            res.status(404).send('Restaurant not found');
+            return;
+        }
+        res.send('Restaurant updated successfully');
+    });
+});
+
 
