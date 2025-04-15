@@ -167,4 +167,21 @@ app.put('/api/v1/restaurants/:restaurantId', (req, res) => {
     });
 });
 
+app.delete('/api/v1/restaurants/:restaurantId', (req, res) => {
+    const restaurantId = req.params.restaurantId;
+
+    db.query('DELETE FROM restaurants WHERE id = ?', [restaurantId], (err, result) => {
+        if (err) {
+            res.status(500).send('Error deleting restaurant');
+            return;
+        }
+        if (result.affectedRows === 0) {
+            res.status(404).send('Restaurant not found');
+            return;
+        }
+        res.send('Restaurant deleted successfully');
+    });
+});
+
+
 
