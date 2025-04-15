@@ -371,4 +371,18 @@ app.put('/api/v1/cart', (req, res) => {
     }
 });
 
+app.delete('/api/v1/cart', (req, res) => {
+    db.query('DELETE FROM cart_items', (err, result) => {
+        if (err) {
+            res.status(500).send('Error clearing cart');
+            return;
+        }
+        res.send('Cart cleared successfully');
+    });
+});
+
+app.listen(port, () => {
+    console.log(`Server is running on port ${port}`);
+});
+
 
