@@ -102,6 +102,22 @@ app.put('/api/v1/users/:userId', (req, res) => {
     });
 });
 
+app.delete('/api/v1/users/:userId', (req, res) => {
+    const userId = req.params.userId;
+
+    db.query('DELETE FROM users WHERE id = ?', [userId], (err, result) => {
+        if (err) {
+            res.status(500).send('Error deleting user');
+            return;
+        }
+        if (result.affectedRows === 0) {
+            res.status(404).send('User not found');
+            return;
+        }
+        res.send('User deleted successfully');
+    });
+});
+
 app.get('/api/v1/restaurants', (req, res) => {
     db.query('SELECT * FROM restaurants', (err, results) => {
         if (err) {
