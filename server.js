@@ -256,5 +256,28 @@ app.delete('/api/v1/restaurants/:restaurantId', (req, res) => {
     });
 });
 
+app.get('/api/v1/cart', (req, res) => {
+    const query = `
+        SELECT c.id, c.quantity, m.name, m.price, (m.price * c.quantity) as total_price 
+        FROM cart_items c 
+        JOIN menu_items m ON c.menu_item_id = m.id
+    `;
+
+    db.query(query, (err, results) => {
+        if (err) {
+            res.status(500).send('Error getting cart items');
+            return;
+        }
+
+
+        const totalAmount = results.reduce((sum, item) => sum + item.total_price, 0);
+
+        res.json({
+            items: results,
+            totalAmount: totalAmount
+        });
+    });
+});
+
 
 
