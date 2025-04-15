@@ -337,5 +337,38 @@ app.post('/api/v1/cart', (req, res) => {
     });
 });
 
+app.put('/api/v1/cart', (req, res) => {
+    const { menuItemId, quantity } = req.body;
+
+    if (!menuItemId || quantity === undefined) {
+        res.status(400).send('Menu item ID and quantity are required');
+        return;
+    }
+
+    if (quantity === 0) {
+        db.query('DELETE FROM cart_items WHERE menu_item_id = ?', [menuItemId], (err, result) => {
+            if (err) {
+                res.status(500).send('Error removing item from cart');
+                return;
+            }
+            res.send('Item removed from cart');
+        });
+    } else if (quantity > 0) {
+        db.query('UPDATE cart_items SET quantity = ? WHERE menu_item_id = ?', 
+            [quantity, menuItemId], (err, result) => {
+                if (err) {
+                    res.status(500).send('Error updating cart');
+                    return;
+                }
+                if (result.affectedRows === 0) {
+                    res.status(404).send('Item not found in cart');
+                    return;
+                }
+                res.send('Cart updated successfully');
+            });
+    } else {
+        res.status(400).send('Quantity must be 0 or greater');
+    }
+});
 
 
