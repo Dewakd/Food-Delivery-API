@@ -65,6 +65,22 @@ app.post('/api/v1/users', (req, res) => {
     });
 });
 
+app.get('/api/v1/users/:userId', (req, res) => {
+    const userId = req.params.userId;
+
+    db.query('SELECT * FROM users WHERE id = ?', [userId], (err, results) => {
+        if (err) {
+            res.status(500).send('Error getting user');
+            return;
+        }
+        if (results.length === 0) {
+            res.status(404).send('User not found');
+            return;
+        }
+        res.json(results[0]);
+    });
+});
+
 app.get('/api/v1/restaurants', (req, res) => {
     db.query('SELECT * FROM restaurants', (err, results) => {
         if (err) {
