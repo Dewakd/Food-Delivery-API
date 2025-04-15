@@ -279,5 +279,63 @@ app.get('/api/v1/cart', (req, res) => {
     });
 });
 
+app.post('/api/v1/cart', (req, res) => {
+    const { menuItemId, quantity } = req.body;
+
+    if (!menuItemId || !quantity) {
+        res.status(400).send('Menu item ID and quantity are required');
+        return;
+    }
+
+    if (quantity <= 0) {
+        res.status(400).send('Quantity must be greater than 0');
+        return;
+    }
+
+
+    db.query('SELECT id FROM menu_items WHERE id = ?', [menuItemId], (err, results) => {
+        if (err) {
+            res.status(500).send('Error checking menu item');
+            return;
+        }
+
+        if (results.length === 0) {
+            res.status(404).send('Menu item not found');
+            return;
+        }
+
+        const userId = 1;
+
+        db.query('SELECT id, quantity FROM cart_items WHERE menu_item_id = ? AND user_id = ?', 
+            [menuItemId, userId], (err, results) => {
+                if (err) {
+                    res.status(500).send('Error checking cart');
+                    return;
+                }
+
+                if (results.length > 0) {
+                    const newQuantity = results[0].quantity + quantity;
+                    db.query('UPDATE cart_items SET quantity = ? WHERE menu_item_id = ? AND user_id = ?', 
+                        [newQuantity, menuItemId, userId], (err, result) => {
+                            if (err) {
+                                res.status(500).send('Error updating cart');
+                                return;
+                            }
+                            res.send('Cart updated successfully');
+                        });
+                } else {
+                    db.query('INSERT INTO cart_items (menu_item_id, user_id, quantity) VALUES (?, ?, ?)', 
+                        [menuItemId, userId, quantity], (err, result) => {
+                            if (err) {
+                                res.status(500).send('Error adding item to cart');
+                                return;
+                            }
+                            res.status(201).send('Item added to cart successfully');
+                        });
+                }
+            });
+    });
+});
+
 
 
