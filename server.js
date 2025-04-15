@@ -55,4 +55,24 @@ app.get('/api/v1/restaurants', (req, res) => {
     });
 });
 
+app.post('/api/v1/restaurants', (req, res) => {
+    const { name, description, image, rating } = req.body;
+
+    if (!name) {
+        res.status(400).send('Restaurant name is required');
+        return;
+    }
+
+    const query = `INSERT INTO restaurants (name, description, image, rating) 
+                   VALUES (?, ?, ?, ?)`;
+
+    db.query(query, [name, description, image, rating], (err, result) => {
+        if (err) {
+            res.status(500).send('Error creating restaurant');
+            return;
+        }
+        res.status(201).send('Restaurant created successfully');
+    });
+});
+
 
