@@ -91,4 +91,38 @@ app.get('/api/v1/restaurants/:restaurantId/menu', (req, res) => {
     });
 });
 
+app.post('/api/v1/restaurants/:restaurantId/menu', (req, res) => {
+    const restaurantId = req.params.restaurantId;
+    const { name, description, price, image } = req.body;
+
+    if (!name || !price) {
+        res.status(400).send('Menu item name and price are required');
+        return;
+    }
+
+
+    db.query('SELECT id FROM restaurants WHERE id = ?', [restaurantId], (err, results) => {
+        if (err) {
+            res.status(500).send('Error checking restaurant');
+            return;
+        }
+        if (results.length === 0) {
+            res.status(404).send('Restaurant not found');
+            return;
+        }
+
+
+        const query = `INSERT INTO menu_items (restaurant_id, name, description, price, image) 
+                       VALUES (?, ?, ?, ?, ?)`;
+
+        db.query(query, [restaurantId, name, description, price, image], (err, result) => {
+            if (err) {
+                res.status(500).send('Error adding menu item');
+                return;
+            }
+            res.status(201).send('Menu item added successfully');
+        });
+    });
+});
+
 
