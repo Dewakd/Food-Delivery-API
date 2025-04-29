@@ -246,7 +246,7 @@ const getCart = (req, res) => {
 };
 
 const addToCart = (req, res) => {
-    const { menuItemId, quantity } = req.body;
+    const { menuItemId, quantity } = req.body;  
 
     if (!menuItemId || !quantity) {
         res.status(400).send('Menu item ID and quantity are required');
